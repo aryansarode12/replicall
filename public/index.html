@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Replicall - AI Voice Calling</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    /* Landing Page Styles */
+    #landing {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      overflow: hidden;
+    }
+    
+    #bgVideo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    
+    .landing-content {
+      max-width: 800px;
+      padding: 30px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+    }
+    
+    .landing-title {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .landing-highlight {
+      color: #4CAF50;
+    }
+    
+    .landing-subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    /* Call Screen Styles */
+    #callScreen {
+      display: none;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .header h1 {
+      color: #4CAF50;
+      margin-bottom: 10px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+      background-color: #4CAF50;
+      color: white;
+      width: 100%;
+    }
+    
+    .btn-primary:hover {
+      background-color: #43A047;
+    }
+    
+    .btn-landing {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 1.2rem;
+      padding: 15px 30px;
+    }
+    
+    .btn-landing:hover {
+      background-color: #43A047;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .status-message {
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+    
+    .status-success {
+      background-color: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #2e7d32;
+    }
+    
+    .status-error {
+      background-color: #ffebee;
+      border: 1px solid #ffcdd2;
+      color: #c62828;
+    }
+    
+    .status-info {
+      background-color: #e3f2fd;
+      border: 1px solid #bbdefb;
+      color: #1565c0;
+    }
+    
+    /* Navigation */
+    .back-btn {
+      margin-bottom: 20px;
+      background: none;
+      border: 1px solid #ddd;
+      color: #333;
+    }
+    
+    @media (max-width: 768px) {
+      .landing-title {
+        font-size: 2rem;
+      }
+      
+      .landing-subtitle {
+        font-size: 1.2rem;
+      }
+      
+      #callScreen {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Landing Page -->
+  <div id="landing">
+    <video autoplay muted loop id="bgVideo">
+      <source src="zbg.mp4" type="video/mp4" />
+      Your browser does not support HTML5 video.
+    </video>
+    
+    <div class="landing-content">
+      <h1 class="landing-title">REPLICALL <span class="landing-highlight">AI</span></h1>
+      <p class="landing-subtitle">Your platform for making ultra-realistic AI Phone Calls</p>
+      <button id="getStartedBtn" class="btn btn-landing">
+        <span>🚀 Get Started</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Call Screen -->
+  <div id="callScreen">
+    <button id="backBtn" class="btn back-btn">
+      <span>⬅ Back to Home</span>
+    </button>
+    
+    <div class="header">
+      <h1>Make a Call</h1>
+      <p>Enter the details below to initiate an AI voice call</p>
+    </div>
+    
+    <div class="form-group">
+      <label for="phoneNumber">Phone Number</label>
+      <input type="tel" id="phoneNumber" class="form-control" placeholder="+917738218156" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="callScript">Call Script</label>
+      <textarea id="callScript" class="form-control" required placeholder="Enter the conversation script here..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="firstMessage">First Message (Optional)</label>
+      <input type="text" id="firstMessage" class="form-control" placeholder="Initial greeting message">
+    </div>
+    
+    <button id="makeCallBtn" class="btn btn-primary">
+      <span>Make Call</span>
+    </button>
+    
+    <div id="result"></div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const elements = {
+      landing: document.getElementById('landing'),
+      callScreen: document.getElementById('callScreen'),
+      getStartedBtn: document.getElementById('getStartedBtn'),
+      backBtn: document.getElementById('backBtn'),
+      phoneNumber: document.getElementById('phoneNumber'),
+      callScript: document.getElementById('callScript'),
+      firstMessage: document.getElementById('firstMessage'),
+      makeCallBtn: document.getElementById('makeCallBtn'),
+      result: document.getElementById('result')
+    };
+
+    // Screen Management
+    function showScreen(screen) {
+      if (screen === 'landing') {
+        elements.landing.style.display = 'flex';
+        elements.callScreen.style.display = 'none';
+      } else {
+        elements.landing.style.display = 'none';
+        elements.callScreen.style.display = 'block';
+      }
+    }
+
+    // Navigation
+    elements.getStartedBtn.addEventListener('click', () => {
+      showScreen('call');
+    });
+    
+    elements.backBtn.addEventListener('click', () => {
+      showScreen('landing');
+    });
+
+    // Make call function
+    async function makeCall() {
+      const phoneNumber = elements.phoneNumber.value.trim();
+      const script = elements.callScript.value.trim();
+      
+      if (!phoneNumber || !script) {
+        alert('Please fill in phone number and script');
+        return;
+      }
+      
+      try {
+        elements.result.innerHTML = '<div class="status-message status-info">Initiating call...</div>';
+        elements.makeCallBtn.disabled = true;
+        
+        const response = await fetch('/make-call', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone_number: phoneNumber,
+            task: script,
+            first_sentence: elements.firstMessage.value.trim() || undefined
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          elements.result.innerHTML = `
+            <div class="status-message status-success">
+              <p>✅ Call initiated successfully!</p>
+              <p>Call ID: ${result.call_id}</p>
+            </div>`;
+        } else {
+          throw new Error(result.error || 'Call failed');
+        }
+      } catch (error) {
+        elements.result.innerHTML = `
+          <div class="status-message status-error">
+            <p>❌ Call failed</p>
+            <p>${error.message}</p>
+          </div>`;
+      } finally {
+        elements.makeCallBtn.disabled = false;
+      }
+    }
+
+    // Event listeners
+    elements.makeCallBtn.addEventListener('click', makeCall);
+    
+    // Allow form submission with Enter key
+    elements.callScript.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        makeCall();
+      }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      showScreen('landing');
+    });
+  </script>
+</body>
+</html>
